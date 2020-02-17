@@ -3,7 +3,7 @@ function pagination(Module = {}) {
   const { logger } = attachment;
 
   const ret = async (ctx, attributes = {}) => {
-    const { model, customQuery = {}, customParams = [] } = attributes;
+    const { model, customQuery = {}, customParams = {} } = attributes;
     let { currentPage, maxEntry } = attributes;
 
     const paginate = ({ pages, pageSize }) => {
@@ -101,11 +101,8 @@ function pagination(Module = {}) {
       delete resp.prev_page_url;
     }
 
-    customParams.forEach(elm => {
-      const key = Object.keys(elm)[0];
-      const value = elm[key];
-
-      const param = `&${key}=${value}`;
+    Object.keys(customParams).forEach(key => {
+      const param = `&${key}=${customParams[key]}`;
 
       resp.first_page_url += param;
       resp.last_page_url += param;

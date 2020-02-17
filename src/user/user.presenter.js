@@ -156,15 +156,16 @@ function GetListUser(Module = {}) {
       users = await user.core.getListUser(ctx, params);
     }
 
-    if (ctx.query.name) {
+    const queryName = ctx.query.name;
+
+    if (queryName) {
       users = await user.core.getListUser(ctx, {
         ...params,
+        customParams: {
+          name: queryName,
+        },
         customQuery: {
-          where: {
-            name: {
-              [Op.like]: `%${ctx.query.name}%`,
-            },
-          },
+          where: { name: { [Op.iLike]: `%${queryName}%` } },
         },
       });
     }

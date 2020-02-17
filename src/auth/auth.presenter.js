@@ -92,7 +92,7 @@ function Google(Module = {}) {
         return;
       }
 
-      const payload = { user: userdata.dataValues };
+      const payload = { user: userdata };
       delete payload.user.password;
 
       payload.user.google_access_token = data.tokens.access_token;
@@ -102,7 +102,7 @@ function Google(Module = {}) {
       const token = jwt.sign(payload);
       const decoded = jwt.decode(token);
       const expiredTime = decoded.payload.exp * 1000;
-      const expiredIn = (new Date(expiredTime) - new Date()) / 1000;
+      const expiredAt = new Date(expiredTime);
 
       payload.access_token = `Bearer ${token}`;
       redis.set(`userdata/${payload.user.id}`, JSON.stringify(payload));
@@ -115,7 +115,7 @@ function Google(Module = {}) {
 
         data: {
           token: {
-            expired_in: expiredIn,
+            expired_at: expiredAt,
             type: 'Bearer',
             value: token,
           },
@@ -180,7 +180,7 @@ function Login(Module = {}) {
     const token = jwt.sign(payload);
     const decoded = jwt.decode(token);
     const expiredTime = decoded.payload.exp * 1000;
-    const expiredIn = (new Date(expiredTime) - new Date()) / 1000;
+    const expiredAt = (new Date(expiredTime) - new Date()) / 1000;
 
     payload.access_token = `Bearer ${token}`;
     redis.set(`userdata/${payload.user.id}`, JSON.stringify(payload));
@@ -193,7 +193,7 @@ function Login(Module = {}) {
 
       data: {
         token: {
-          expired_in: expiredIn,
+          expired_in: expiredAt,
           type: 'Bearer',
           value: token,
         },
@@ -287,7 +287,7 @@ function Register(Module = {}) {
     const token = jwt.sign(payload);
     const decoded = jwt.decode(token);
     const expiredTime = decoded.payload.exp * 1000;
-    const expiredIn = (new Date(expiredTime) - new Date()) / 1000;
+    const expiredAt = (new Date(expiredTime) - new Date()) / 1000;
 
     payload.access_token = `Bearer ${token}`;
     redis.set(`userdata/${payload.user.id}`, JSON.stringify(payload));
@@ -300,7 +300,7 @@ function Register(Module = {}) {
 
       data: {
         token: {
-          expired_in: expiredIn,
+          expired_in: expiredAt,
           type: 'Bearer',
           value: token,
         },

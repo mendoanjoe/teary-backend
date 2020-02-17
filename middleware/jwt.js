@@ -16,7 +16,7 @@ const options = {
   issuer,
 
   algorithm: 'RS256',
-  expiresIn: '12h',
+  expiresIn: '30d',
 };
 
 function decode(token) {

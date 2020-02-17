@@ -257,13 +257,16 @@ function GetList(Module = {}) {
       roles = await role.core.getListRole(ctx, params);
     }
 
-    if (ctx.query.name) {
+    const queryName = ctx.query.name;
+
+    if (queryName) {
       roles = await role.core.getListRole(ctx, {
         ...params,
+        customParams: {
+          name: queryName,
+        },
         customQuery: {
-          where: Sequelize.where(Sequelize.fn('lower', Sequelize.col('name')), {
-            [Op.like]: `%${ctx.query.name.toLowerCase()}%`,
-          }),
+          where: { name: { [Op.iLike]: queryName } },
         },
       });
     }
