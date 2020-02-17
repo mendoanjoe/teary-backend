@@ -1,0 +1,13 @@
+# Prevent environment variable leaks
+.env
+
+# Prevent uploading dependencies
+node_modules/
+
+# Prevent uploading log information
+log/*.log
+
+index.html
+
+# Ignore certs
+certs/jwtRS256.key

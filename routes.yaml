@@ -1,0 +1,4 @@
+version_prefix: "/v1"
+path:
+  - "GET /ping"
+  - "GET /auth/login:google"

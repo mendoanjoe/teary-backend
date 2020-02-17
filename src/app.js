@@ -1,0 +1,85 @@
+const bodyParser = require('koa-bodyparser');
+const cors = require('@koa/cors');
+const helmet = require('koa-helmet');
+const json = require('koa-json');
+const Koa = require('koa');
+const koaQs = require('koa-qs');
+const koaLogger = require('koa-logger');
+
+const db = require('./../db');
+const routes = require('./routes');
+
+// const mailgun = require('./../lib/mailgun');
+// const duitku = require('./../lib/duitku');
+// const socket = require('./../lib/socket.io');
+const logger = require('./../lib/logger');
+const minio = require('./../lib/minio');
+const redis = require('./../lib/redis');
+const sendgrid = require('./../lib/sendgrid');
+
+const errorHandler = require('./../middleware/error');
+const jwt = require('./../middleware/jwt');
+const role = require('./../middleware/role');
+
+function verifyOrigin(trustedOrigins) {
+  const ret = ctx => {
+    const { origin } = ctx.headers;
+
+    return trustedOrigins.indexOf(origin) !== -1 ? origin : false;
+  };
+
+  return ret;
+}
+
+function setup(env) {
+  const app = new Koa();
+  koaQs(app);
+
+  app.use(helmet());
+
+  const trustedOrigins = [`http://localhost:${env.PORT}`];
+  app.use(cors({ origin: verifyOrigin(trustedOrigins) }));
+
+  app.use(bodyParser({ enableTypes: ['json', 'form'] }));
+  app.use(json());
+
+  if (env.NODE_ENV !== 'production') {
+    app.use(koaLogger());
+  }
+
+  app.use(errorHandler);
+
+  const attachment = {
+    app,
+    env,
+
+    db: db.init(env),
+
+    // mailgun: mailgun.init(env),
+    // duitku: duitku.init(env),
+    // socket: socket.connect(env.REDIS_HOST, env.REDIS_PORT),
+    // redisQueue: redis.queue.connect(env.REDIS_HOST, env.REDIS_PORT),
+    logger: logger(env),
+    minio: minio.init(env),
+    redis: redis.connect(env),
+    sendgrid: sendgrid.init(env),
+  };
+
+  const router = routes.attach(attachment);
+
+  app.use(role.attach(attachment));
+  app.use(jwt.privateURL());
+
+  app.use(router.routes(), router.allowedMethods());
+
+  app.onListening = async () => {
+    // attachment.redisQueue.initSubscriber();
+    // attachment.redisQueue.initReceiver.attach(attachment);
+  };
+
+  return { app, attachment };
+}
+
+module.exports = {
+  setup,
+};

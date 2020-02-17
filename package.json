@@ -1,0 +1,71 @@
+{
+  "name": "teary-backend",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "server.js",
+  "directories": {
+    "lib": "lib",
+    "middleware": "middleware"
+  },
+  "engines": {
+    "node": "^10.16.3",
+    "npm": "^6.12.0"
+  },
+  "scripts": {
+    "lint": "npx eslint .",
+    "sequelize": "node scripts/commander sequelize",
+    "start": "node server",
+    "dev": "nodemon server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:wisn/teary-backend.git"
+  },
+  "author": "Wisnu Adi Nurcahyo <wisn.adn@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@hapi/joi": "^16.1.7",
+    "@koa/cors": "^3.0.0",
+    "axios": "^0.19.0",
+    "bcryptjs": "^2.4.3",
+    "bluebird": "^3.7.2",
+    "dotenv": "^8.2.0",
+    "form-data": "^3.0.0",
+    "googleapis": "^45.0.0",
+    "http-status-codes": "^1.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.11.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-helmet": "^5.2.0",
+    "koa-json": "^2.0.2",
+    "koa-jwt": "^3.6.0",
+    "koa-logger": "^3.2.1",
+    "koa-qs": "^2.0.0",
+    "koa-router": "^7.4.0",
+    "minio": "^7.0.12",
+    "pg": "^7.12.1",
+    "redis": "^2.8.0",
+    "sequelize": "^5.21.2",
+    "socket.io": "^2.3.0",
+    "socket.io-emitter": "^3.1.1",
+    "socket.io-redis": "^5.2.0",
+    "uninstall": "0.0.0",
+    "uuid": "^3.3.3",
+    "winston": "^3.2.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "prettier": "^1.19.1"
+  }
+}
