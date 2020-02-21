@@ -1,14 +1,14 @@
 const bcrypt = require('bcryptjs');
 
-const userCore = require('./../user/user.core');
+const usersCore = require('./../users/users.core');
 
 function authenticateUser(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async (attributes = {}) => {
     const { email, password } = attributes;
 
-    const userdata = await user.core.findUserByEmail(email);
+    const userdata = await users.core.findUserByEmail(email);
 
     if (!userdata) {
       return false;
@@ -32,7 +32,7 @@ function attach(attachment = {}) {
   const Module = {
     attachment,
 
-    user: { core: userCore.attach(attachment) },
+    users: { core: usersCore.attach(attachment) },
   };
 
   const functions = [authenticateUser];

@@ -1,11 +1,10 @@
 const bcrypt = require('bcryptjs');
-// const uuid = require('uuid/v4');
 
-const roleStorage = require('./../role/role.storage');
-const userStorage = require('./user.storage');
+const rolesStorage = require('./../roles/roles.storage');
+const usersStorage = require('./users.storage');
 
 function createUser(Module = {}) {
-  const { attachment, role, user } = Module;
+  const { attachment, roles, users } = Module;
   const { env } = attachment;
 
   const ret = async (attributes = {}) => {
@@ -17,12 +16,12 @@ function createUser(Module = {}) {
       hash = bcrypt.hashSync(password, salt);
     }
 
-    const defaultRole = await role.storage.getRoleByName('Default');
+    const defaultRole = await roles.storage.getRoleByName('Default');
     if (!defaultRole) {
       return false;
     }
 
-    const userCreation = await user.storage.createUser({
+    const user = await users.storage.createUser({
       nim,
       email,
       name,
@@ -32,57 +31,57 @@ function createUser(Module = {}) {
       role_id: defaultRole.id,
     });
 
-    if (!userCreation) {
+    if (!user) {
       return false;
     }
 
-    return userCreation.dataValues;
+    return user.dataValues;
   };
 
   return ret;
 }
 
 function deleteUserById(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async id => {
-    const userDeletion = await user.storage.deleteUserById(id);
+    const user = await users.storage.deleteUserById(id);
 
-    return userDeletion;
+    return user;
   };
 
   return ret;
 }
 
 function findUserByEmail(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async email => {
-    const userRetrieval = await user.storage.findByEmail(email);
+    const user = await users.storage.findByEmail(email);
 
-    return userRetrieval;
+    return user;
   };
 
   return ret;
 }
 
 function findUserById(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async id => {
-    const userRetrieval = await user.storage.findById(id);
+    const user = await users.storage.findById(id);
 
-    return userRetrieval;
+    return user;
   };
 
   return ret;
 }
 
 function getListUser(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async (ctx, attributes = {}) => {
-    const userList = await user.storage.paginate(ctx, attributes);
+    const userList = await users.storage.paginate(ctx, attributes);
 
     return userList;
   };
@@ -91,19 +90,19 @@ function getListUser(Module = {}) {
 }
 
 function isEmailRegistered(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async email => {
-    const userRetrieval = await user.storage.findByEmail(email);
+    const user = await users.storage.findByEmail(email);
 
-    return !!userRetrieval;
+    return !!user;
   };
 
   return ret;
 }
 
 function updateUser(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async (attributes = {}) => {
     const { id, password } = attributes;
@@ -119,16 +118,16 @@ function updateUser(Module = {}) {
       data.password = hash;
     }
 
-    const userUpdation = await user.storage.updateUserById(id, data);
+    const user = await users.storage.updateUserById(id, data);
 
-    return userUpdation[1];
+    return user[1];
   };
 
   return ret;
 }
 
 function updateUserByEmail(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async (email, attributes = {}) => {
     const { password } = attributes;
@@ -144,9 +143,9 @@ function updateUserByEmail(Module = {}) {
       data.password = hash;
     }
 
-    const userUpdation = await user.storage.updateByEmail(email, data);
+    const user = await users.storage.updateByEmail(email, data);
 
-    return userUpdation[1];
+    return user[1];
   };
 
   return ret;
@@ -156,8 +155,8 @@ function attach(attachment = {}) {
   const Module = {
     attachment,
 
-    role: { storage: roleStorage.attach(attachment) },
-    user: { storage: userStorage.attach(attachment) },
+    roles: { storage: rolesStorage.attach(attachment) },
+    users: { storage: usersStorage.attach(attachment) },
   };
 
   const functions = [

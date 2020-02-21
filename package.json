@@ -1,7 +1,7 @@
 {
   "name": "teary-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "An online auto grader for Logic Programming course at Telkom University.",
   "private": true,
   "main": "server.js",
   "directories": {

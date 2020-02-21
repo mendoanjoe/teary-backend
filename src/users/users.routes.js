@@ -1,6 +1,6 @@
 const router = require('koa-router')();
 
-let presenter = require('./user.presenter');
+let presenter = require('./users.presenter');
 
 function attach(attachment = {}) {
   presenter = presenter.attach(attachment);
@@ -12,7 +12,6 @@ function attach(attachment = {}) {
   router.get('/:userId', presenter.GetUserById);
   router.put('/:userId', presenter.UpdateUser);
   router.delete('/:userId', presenter.DeleteUserById);
-  // router.put('/:userId/password::change', presenter.ChangePasswordUser);
 
   return router;
 }

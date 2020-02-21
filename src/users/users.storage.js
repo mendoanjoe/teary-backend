@@ -1,58 +1,58 @@
-const pagination = require('./../../helper/pagination');
+const pagination = require('../../helper/pagination');
 
 function createUser(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async (attributes = {}) => {
-    const userCreation = await user.model.create(attributes);
+    const user = await users.model.create(attributes);
 
-    return userCreation;
+    return user;
   };
 
   return ret;
 }
 
 function deleteUserById(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async id => {
-    const userDeletion = await user.model.destroy({ where: { id } });
+    const user = await users.model.destroy({ where: { id } });
 
-    return userDeletion;
+    return user;
   };
 
   return ret;
 }
 
 function findByEmail(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async email => {
-    const userRetrieval = await user.model.findOne({ where: { email } });
+    const user = await users.model.findOne({ where: { email } });
 
-    return userRetrieval;
+    return user;
   };
 
   return ret;
 }
 
 function findById(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async id => {
-    const userRetrieval = await user.model.findOne({ where: { id } });
+    const user = await users.model.findOne({ where: { id } });
 
-    return userRetrieval;
+    return user;
   };
 
   return ret;
 }
 
 function paginate(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async (ctx, attributes = {}) => {
-    const userList = await user.helper.paginate(ctx, attributes);
+    const userList = await users.helper.paginate(ctx, attributes);
 
     return userList;
   };
@@ -61,32 +61,32 @@ function paginate(Module = {}) {
 }
 
 function updateByEmail(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async (email, attributes = {}) => {
-    const userUpdation = await user.model.update(attributes, {
+    const user = await users.model.update(attributes, {
       where: { email },
       returning: true,
       plain: true,
     });
 
-    return userUpdation;
+    return user;
   };
 
   return ret;
 }
 
 function updateUserById(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async (id, attributes = {}) => {
-    const userUpdation = await user.model.update(attributes, {
+    const user = await users.model.update(attributes, {
       where: { id },
       returning: true,
       plain: true,
     });
 
-    return userUpdation;
+    return user;
   };
 
   return ret;
@@ -96,7 +96,7 @@ function attach(attachment = {}) {
   const Module = {
     attachment,
 
-    user: {
+    users: {
       helper: { paginate: pagination.attach(attachment) },
       model: attachment.db.postgres.models.users,
     },

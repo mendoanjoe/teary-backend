@@ -1,11 +1,11 @@
 const router = require('koa-router')();
 
-let presenter = require('./file.presenter');
+let presenter = require('./files.presenter');
 
 function attach(attachment = {}) {
   presenter = presenter.attach(attachment);
 
-  router.prefix('/file');
+  router.prefix('/files');
 
   router.get('/:bucketName', presenter.ListObject);
   router.post('/download/request', presenter.DownloadRequest);

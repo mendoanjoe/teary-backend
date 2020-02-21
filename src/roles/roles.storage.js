@@ -1,58 +1,58 @@
 const pagination = require('./../../helper/pagination');
 
 function createRole(Module = {}) {
-  const { role } = Module;
+  const { roles } = Module;
 
   const ret = async (attributes = {}) => {
-    const roleCreation = await role.model.create(attributes);
+    const role = await roles.model.create(attributes);
 
-    return roleCreation;
+    return role;
   };
 
   return ret;
 }
 
 function deleteRoleById(Module = {}) {
-  const { role } = Module;
+  const { roles } = Module;
 
   const ret = async id => {
-    const roleDeletion = await role.model.destroy({ where: { id } });
+    const role = await roles.model.destroy({ where: { id } });
 
-    return roleDeletion;
+    return role;
   };
 
   return ret;
 }
 
 function getRoleById(Module = {}) {
-  const { role } = Module;
+  const { roles } = Module;
 
   const ret = async id => {
-    const roleRetrieval = await role.model.findOne({ where: { id } });
+    const role = await roles.model.findOne({ where: { id } });
 
-    return roleRetrieval;
+    return role;
   };
 
   return ret;
 }
 
 function getRoleByName(Module = {}) {
-  const { role } = Module;
+  const { roles } = Module;
 
   const ret = async name => {
-    const roleRetrieval = await role.model.findOne({ where: { name } });
+    const role = await roles.model.findOne({ where: { name } });
 
-    return roleRetrieval;
+    return role;
   };
 
   return ret;
 }
 
 function paginate(Module = {}) {
-  const { role } = Module;
+  const { roles } = Module;
 
   const ret = async (ctx, attributes = {}) => {
-    const roleList = await role.helper.paginate(ctx, attributes);
+    const roleList = await roles.helper.paginate(ctx, attributes);
 
     return roleList;
   };
@@ -61,16 +61,16 @@ function paginate(Module = {}) {
 }
 
 function updateRoleById(Module = {}) {
-  const { role } = Module;
+  const { roles } = Module;
 
   const ret = async (id, attributes = {}) => {
-    const roleUpdation = await role.model.update(attributes, {
+    const role = await roles.model.update(attributes, {
       where: { id },
       returning: true,
       plain: true,
     });
 
-    return roleUpdation;
+    return role;
   };
 
   return ret;
@@ -80,7 +80,7 @@ function attach(attachment = {}) {
   const Module = {
     attachment,
 
-    role: {
+    roles: {
       helper: { paginate: pagination.attach(attachment) },
       model: attachment.db.postgres.models.roles,
     },

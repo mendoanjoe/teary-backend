@@ -10,7 +10,7 @@ const routesPath = yaml.load('routes.yaml');
 const privateKey = fs.readFileSync(`${certPath}/jwtRS256.key`, 'utf-8');
 const publicKey = fs.readFileSync(`${certPath}/jwtRS256.key.pub`, 'utf-8');
 
-const issuer = 'Proclub Studio';
+const issuer = 'Teary';
 
 const options = {
   issuer,

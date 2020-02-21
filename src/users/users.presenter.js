@@ -1,13 +1,13 @@
 const httpStatus = require('http-status-codes');
 
-const userCore = require('./user.core');
-const userValidation = require('./user.validation');
+const usersCore = require('./users.core');
+const usersValidation = require('./users.validation');
 
 function CreateUser(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async ctx => {
-    const validateBody = user.validation.createUserSchema.validate(ctx.request.body);
+    const validateBody = users.validation.createUserSchema.validate(ctx.request.body);
 
     if (validateBody.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -25,7 +25,7 @@ function CreateUser(Module = {}) {
 
     const { email, name, nim, password } = ctx.request.body;
 
-    if (await user.core.isEmailRegistered(email)) {
+    if (await users.core.isEmailRegistered(email)) {
       ctx.status = httpStatus.BAD_REQUEST;
       ctx.body = {
         code: httpStatus.BAD_REQUEST,
@@ -35,9 +35,9 @@ function CreateUser(Module = {}) {
       return;
     }
 
-    const userCreation = await user.core.createUser({ email, name, nim, password });
+    const user = await users.core.createUser({ email, name, nim, password });
 
-    if (!userCreation) {
+    if (!user) {
       ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
       ctx.body = {
         code: httpStatus.INTERNAL_SERVER_ERROR,
@@ -47,7 +47,7 @@ function CreateUser(Module = {}) {
       return;
     }
 
-    delete userCreation.password;
+    delete user.password;
 
     ctx.status = httpStatus.CREATED;
     ctx.body = {
@@ -55,7 +55,7 @@ function CreateUser(Module = {}) {
       message: 'user created',
       ok: true,
 
-      data: userCreation,
+      data: user,
     };
   };
 
@@ -63,11 +63,11 @@ function CreateUser(Module = {}) {
 }
 
 function UpdateUser(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async ctx => {
-    const validateBody = user.validation.updateUserSchema.validate(ctx.request.body);
-    const validateParams = user.validation.needUserId.validate(ctx.params);
+    const validateBody = users.validation.updateUserSchema.validate(ctx.request.body);
+    const validateParams = users.validation.needUserId.validate(ctx.params);
 
     if (validateBody.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -97,9 +97,9 @@ function UpdateUser(Module = {}) {
       return;
     }
 
-    const userUpdation = await user.core.updateUser({ id: ctx.params.userId, ...ctx.request.body });
+    const user = await users.core.updateUser({ id: ctx.params.userId, ...ctx.request.body });
 
-    if (!userUpdation) {
+    if (!user) {
       ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
       ctx.body = {
         code: httpStatus.INTERNAL_SERVER_ERROR,
@@ -109,7 +109,7 @@ function UpdateUser(Module = {}) {
       return;
     }
 
-    delete userUpdation.password;
+    delete user.password;
 
     ctx.status = httpStatus.OK;
     ctx.body = {
@@ -117,7 +117,7 @@ function UpdateUser(Module = {}) {
       message: 'user updated',
       ok: true,
 
-      data: userUpdation,
+      data: user,
     };
   };
 
@@ -125,11 +125,11 @@ function UpdateUser(Module = {}) {
 }
 
 function GetListUser(Module = {}) {
-  const { attachment, user } = Module;
+  const { attachment, users } = Module;
   const { Op } = attachment.db.postgres.Sequelize;
 
   const ret = async ctx => {
-    const validateQuery = user.validation.paginationQuery.validate(ctx.query);
+    const validateQuery = users.validation.paginationQuery.validate(ctx.query);
 
     if (validateQuery.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -145,7 +145,7 @@ function GetListUser(Module = {}) {
       return;
     }
 
-    let users = {};
+    let userList = {};
     const params = {
       model: 'users',
       currentPage: ctx.query.current_page,
@@ -153,13 +153,13 @@ function GetListUser(Module = {}) {
     };
 
     if (!ctx.query.name) {
-      users = await user.core.getListUser(ctx, params);
+      userList = await users.core.getListUser(ctx, params);
     }
 
     const queryName = ctx.query.name;
 
     if (queryName) {
-      users = await user.core.getListUser(ctx, {
+      userList = await users.core.getListUser(ctx, {
         ...params,
         customParams: {
           name: queryName,
@@ -170,11 +170,11 @@ function GetListUser(Module = {}) {
       });
     }
 
-    users.data = users.data.map(elm => {
-      const userData = elm;
-      delete userData.password;
+    userList.data = userList.data.map(elm => {
+      const user = elm;
+      delete user.password;
 
-      return userData;
+      return user;
     });
 
     ctx.status = httpStatus.OK;
@@ -183,7 +183,7 @@ function GetListUser(Module = {}) {
       message: 'user loaded',
       ok: true,
 
-      ...users,
+      ...userList,
     };
   };
 
@@ -191,10 +191,10 @@ function GetListUser(Module = {}) {
 }
 
 function GetUserById(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async ctx => {
-    const validateParams = user.validation.needUserId.validate(ctx.params);
+    const validateParams = users.validation.needUserId.validate(ctx.params);
 
     if (validateParams.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -210,8 +210,8 @@ function GetUserById(Module = {}) {
       return;
     }
 
-    const userRetrieval = await user.core.findUserById(ctx.params.userId);
-    delete userRetrieval.password;
+    const user = await users.core.findUserById(ctx.params.userId);
+    delete user.password;
 
     ctx.status = httpStatus.OK;
     ctx.body = {
@@ -219,7 +219,7 @@ function GetUserById(Module = {}) {
       message: 'user loaded',
       ok: true,
 
-      data: userRetrieval,
+      data: user,
     };
   };
 
@@ -227,10 +227,10 @@ function GetUserById(Module = {}) {
 }
 
 function DeleteUserById(Module = {}) {
-  const { user } = Module;
+  const { users } = Module;
 
   const ret = async ctx => {
-    const validateParams = user.validation.needUserId.validate(ctx.params);
+    const validateParams = users.validation.needUserId.validate(ctx.params);
 
     if (validateParams.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -246,9 +246,9 @@ function DeleteUserById(Module = {}) {
       return;
     }
 
-    const userDeletion = await user.core.deleteUserById(ctx.params.userId);
+    const user = await users.core.deleteUserById(ctx.params.userId);
 
-    if (userDeletion === 0) {
+    if (user === 0) {
       ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
       ctx.body = {
         code: httpStatus.INTERNAL_SERVER_ERROR,
@@ -272,9 +272,9 @@ function attach(attachment = {}) {
   const Module = {
     attachment,
 
-    user: {
-      core: userCore.attach(attachment),
-      validation: userValidation,
+    users: {
+      core: usersCore.attach(attachment),
+      validation: usersValidation,
     },
   };
 

@@ -1,6 +1,6 @@
 const router = require('koa-router')();
 
-let presenter = require('./role.presenter');
+let presenter = require('./roles.presenter');
 
 function attach(attachment = {}) {
   presenter = presenter.attach(attachment);

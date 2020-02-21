@@ -1,14 +1,14 @@
 const httpStatus = require('http-status-codes');
 
-const roleCore = require('./role.core');
-const roleErrors = require('./role.errors');
-const roleValidation = require('./role.validation');
+const rolesCore = require('./roles.core');
+const rolesErrors = require('./roles.errors');
+const rolesValidation = require('./roles.validation');
 
 function AssignRoleToUser(Module = {}) {
-  const { role } = Module;
+  const { roles } = Module;
 
   const ret = async ctx => {
-    const validate = role.validation.roleAssignmentSchema.validate(ctx.request.body);
+    const validate = roles.validation.roleAssignmentSchema.validate(ctx.request.body);
 
     if (validate.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -27,9 +27,9 @@ function AssignRoleToUser(Module = {}) {
     const roleId = ctx.request.body.role_id;
     const userId = ctx.request.body.user_id;
 
-    const userRoleUpdation = await role.core.assignRoleToUser({ roleId, userId });
+    const role = await roles.core.assignRoleToUser({ roleId, userId });
 
-    if (!userRoleUpdation) {
+    if (!role) {
       ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
       ctx.body = {
         code: httpStatus.INTERNAL_SERVER_ERROR,
@@ -39,7 +39,7 @@ function AssignRoleToUser(Module = {}) {
       return;
     }
 
-    delete userRoleUpdation.user.password;
+    delete role.user.password;
 
     ctx.status = httpStatus.OK;
     ctx.body = {
@@ -47,7 +47,7 @@ function AssignRoleToUser(Module = {}) {
       message: 'user role updated',
       ok: true,
 
-      data: userRoleUpdation,
+      data: role,
     };
   };
 
@@ -55,10 +55,10 @@ function AssignRoleToUser(Module = {}) {
 }
 
 function Create(Module = {}) {
-  const { role } = Module;
+  const { roles } = Module;
 
   const ret = async ctx => {
-    const validate = role.validation.roleCreationSchema.validate(ctx.request.body);
+    const validate = roles.validation.roleCreationSchema.validate(ctx.request.body);
 
     if (validate.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -75,9 +75,9 @@ function Create(Module = {}) {
     }
 
     const { deletable, name, rules } = ctx.request.body;
-    const roleCreation = await role.core.createRole({ deletable, name, rules });
+    const role = await roles.core.createRole({ deletable, name, rules });
 
-    if (!roleCreation) {
+    if (!role) {
       ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
       ctx.body = {
         code: httpStatus.INTERNAL_SERVER_ERROR,
@@ -93,7 +93,7 @@ function Create(Module = {}) {
       message: 'role created',
       ok: true,
 
-      data: roleCreation.dataValues,
+      data: role.dataValues,
     };
   };
 
@@ -101,10 +101,10 @@ function Create(Module = {}) {
 }
 
 function DeleteById(Module = {}) {
-  const { role } = Module;
+  const { roles } = Module;
 
   const ret = async ctx => {
-    const validate = role.validation.roleDeletionSchema.validate(ctx.params);
+    const validate = roles.validation.roleDeletionSchema.validate(ctx.params);
 
     if (validate.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -121,11 +121,10 @@ function DeleteById(Module = {}) {
     }
 
     const { id } = ctx.params;
-
-    const status = await role.core.isRoleDeletable(id);
+    const status = await roles.core.isRoleDeletable(id);
 
     switch (status) {
-      case role.errors.ROLE_NOT_EXISTS:
+      case roles.errors.ROLE_NOT_EXISTS:
         ctx.status = httpStatus.NOT_FOUND;
         ctx.body = {
           code: httpStatus.NOT_FOUND,
@@ -133,7 +132,7 @@ function DeleteById(Module = {}) {
           ok: false,
         };
         break;
-      case role.errors.ROLE_NOT_DELETABLE:
+      case roles.errors.ROLE_NOT_DELETABLE:
         ctx.status = httpStatus.FORBIDDEN;
         ctx.body = {
           code: httpStatus.FORBIDDEN,
@@ -141,11 +140,11 @@ function DeleteById(Module = {}) {
           ok: false,
         };
         break;
-      case role.errors.ROLE_DELETABLE:
+      case roles.errors.ROLE_DELETABLE:
         {
-          const roleDeletion = await role.core.deleteRoleById(id);
+          const role = await roles.core.deleteRoleById(id);
 
-          if (!roleDeletion) {
+          if (!role) {
             ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
             ctx.body = {
               code: httpStatus.INTERNAL_SERVER_ERROR,
@@ -177,10 +176,10 @@ function DeleteById(Module = {}) {
 }
 
 function GetById(Module = {}) {
-  const { role } = Module;
+  const { roles } = Module;
 
   const ret = async ctx => {
-    const validate = role.validation.roleFetchSchema.validate(ctx.params);
+    const validate = roles.validation.roleFetchSchema.validate(ctx.params);
 
     if (validate.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -197,10 +196,9 @@ function GetById(Module = {}) {
     }
 
     const { id } = ctx.params;
+    const role = await roles.core.getRoleById(id);
 
-    const roleRetrieval = await role.core.getRoleById(id);
-
-    if (!roleRetrieval) {
+    if (!role) {
       ctx.status = httpStatus.NOT_FOUND;
       ctx.body = {
         code: httpStatus.NOT_FOUND,
@@ -216,7 +214,7 @@ function GetById(Module = {}) {
       message: 'role fetched',
       ok: true,
 
-      data: roleRetrieval,
+      data: role,
     };
   };
 
@@ -224,13 +222,13 @@ function GetById(Module = {}) {
 }
 
 function GetList(Module = {}) {
-  const { attachment, role } = Module;
+  const { attachment, roles } = Module;
 
   const { Sequelize } = attachment.db.postgres;
   const { Op } = Sequelize;
 
   const ret = async ctx => {
-    const validate = role.validation.rolePaginationSchema.validate(ctx.query);
+    const validate = roles.validation.rolePaginationSchema.validate(ctx.query);
 
     if (validate.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -246,7 +244,7 @@ function GetList(Module = {}) {
       return;
     }
 
-    let roles = {};
+    let roleList = {};
     const params = {
       currentPage: ctx.query.current_page,
       maxEntry: ctx.query.max_entry,
@@ -254,13 +252,13 @@ function GetList(Module = {}) {
     };
 
     if (!ctx.query.name) {
-      roles = await role.core.getListRole(ctx, params);
+      roleList = await roles.core.getListRole(ctx, params);
     }
 
     const queryName = ctx.query.name;
 
     if (queryName) {
-      roles = await role.core.getListRole(ctx, {
+      roleList = await roles.core.getListRole(ctx, {
         ...params,
         customParams: {
           name: queryName,
@@ -277,7 +275,7 @@ function GetList(Module = {}) {
       message: 'roles fetched',
       ok: true,
 
-      ...roles,
+      ...roleList,
     };
   };
 
@@ -285,11 +283,11 @@ function GetList(Module = {}) {
 }
 
 function UpdateById(Module = {}) {
-  const { role } = Module;
+  const { roles } = Module;
 
   const ret = async ctx => {
-    const validateParam = role.validation.roleFetchSchema.validate(ctx.params);
-    const validateBody = role.validation.roleUpdateSchema.validate(ctx.request.body);
+    const validateParam = roles.validation.roleFetchSchema.validate(ctx.params);
+    const validateBody = roles.validation.roleUpdateSchema.validate(ctx.request.body);
 
     if (validateParam.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -319,9 +317,9 @@ function UpdateById(Module = {}) {
       return;
     }
 
-    const roleUpdation = await role.core.updateRoleById({ id: ctx.params.id, ...ctx.request.body });
+    const role = await roles.core.updateRoleById({ id: ctx.params.id, ...ctx.request.body });
 
-    if (!roleUpdation) {
+    if (!role) {
       ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
       ctx.body = {
         code: httpStatus.INTERNAL_SERVER_ERROR,
@@ -337,7 +335,7 @@ function UpdateById(Module = {}) {
       message: 'role updated',
       ok: true,
 
-      data: roleUpdation,
+      data: role,
     };
   };
 
@@ -348,10 +346,10 @@ function attach(attachment = {}) {
   const Module = {
     attachment,
 
-    role: {
-      core: roleCore.attach(attachment),
-      errors: roleErrors,
-      validation: roleValidation,
+    roles: {
+      core: rolesCore.attach(attachment),
+      errors: rolesErrors,
+      validation: rolesValidation,
     },
   };
 

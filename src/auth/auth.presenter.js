@@ -3,14 +3,13 @@ const httpStatus = require('http-status-codes');
 const { google } = require('googleapis');
 
 const jwt = require('./../../middleware/jwt');
-// const otpModule = require('./../otp');
 
 const authCore = require('./auth.core');
 const authValidation = require('./auth.validation');
-const userCore = require('./../user/user.core');
+const usersCore = require('./../users/users.core');
 
 function Google(Module = {}) {
-  const { attachment, user } = Module;
+  const { attachment, users } = Module;
   const { env, redis } = attachment;
 
   const config = {
@@ -80,9 +79,9 @@ function Google(Module = {}) {
 
       userInfo = userInfo.data;
       const { email } = userInfo;
-      const userdata = await user.core.findUserByEmail(email);
+      const user = await users.core.findUserByEmail(email);
 
-      if (!userdata) {
+      if (!user) {
         ctx.status = httpStatus.NOT_FOUND;
         ctx.body = {
           code: httpStatus.NOT_FOUND,
@@ -92,7 +91,7 @@ function Google(Module = {}) {
         return;
       }
 
-      const payload = { user: userdata };
+      const payload = { user };
       delete payload.user.password;
 
       payload.user.google_access_token = data.tokens.access_token;
@@ -235,7 +234,7 @@ function Logout(Module = {}) {
 }
 
 function Register(Module = {}) {
-  const { attachment, auth, user } = Module;
+  const { attachment, auth, users } = Module;
   const { redis } = attachment;
 
   const ret = async ctx => {
@@ -257,7 +256,7 @@ function Register(Module = {}) {
 
     const { email } = ctx.request.body;
 
-    if (await user.core.isEmailRegistered(email)) {
+    if (await users.core.isEmailRegistered(email)) {
       ctx.status = httpStatus.BAD_REQUEST;
       ctx.body = {
         code: httpStatus.BAD_REQUEST,
@@ -267,11 +266,11 @@ function Register(Module = {}) {
       return;
     }
 
-    const userdata = await user.core.createUser({
+    const user = await users.core.createUser({
       ...ctx.request.body,
     });
 
-    if (!userdata) {
+    if (!user) {
       ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
       ctx.body = {
         code: httpStatus.INTERNAL_SERVER_ERROR,
@@ -290,7 +289,7 @@ function Register(Module = {}) {
     const expiredAt = (new Date(expiredTime) - new Date()) / 1000;
 
     payload.access_token = `Bearer ${token}`;
-    redis.set(`userdata/${payload.user.id}`, JSON.stringify(payload));
+    redis.set(`user/${payload.user.id}`, JSON.stringify(payload));
 
     ctx.status = httpStatus.CREATED;
     ctx.body = {
@@ -320,7 +319,7 @@ function attach(attachment = {}) {
       core: authCore.attach(attachment),
       validation: authValidation,
     },
-    user: { core: userCore.attach(attachment) },
+    users: { core: usersCore.attach(attachment) },
   };
 
   const functions = [Google, Login, Logout, Register];

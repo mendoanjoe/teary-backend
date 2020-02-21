@@ -10,8 +10,6 @@ function attach(attachment = {}) {
 
   router.post('/login', presenter.Login);
   router.post('/logout', presenter.Logout);
-  // router.post('/password-reset/request', presenter.RequestPasswordReset);
-  // router.post('/password-reset/submit', presenter.ResetPassword);
   router.post('/register', presenter.Register);
 
   // eslint-disable-next-line consistent-return

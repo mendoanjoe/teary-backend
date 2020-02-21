@@ -1,55 +1,55 @@
-const storage = require('./file.storage');
+const filesStorage = require('./files.storage');
 
 function downloadRequest(Module = {}) {
-  const { Storage } = Module;
+  const { files } = Module;
 
   const ret = async (attributes = {}) => {
     const { bucketName, objectName } = attributes;
+    const file = await files.storage.downloadRequest({ bucketName, objectName });
 
-    const res = await Storage.downloadRequest({ bucketName, objectName });
-
-    return res;
+    return file;
   };
 
   return ret;
 }
 
 function listObject(Module = {}) {
-  const { Storage } = Module;
+  const { files } = Module;
 
   const ret = async bucketName => {
-    const res = await Storage.listObject(bucketName);
+    const file = await files.storage.listObject(bucketName);
 
-    return res;
+    return file;
   };
 
   return ret;
 }
 
 function uploadRequest(Module = {}) {
-  const { Storage } = Module;
+  const { files } = Module;
 
   const ret = async (attributes = {}) => {
     const { bucketName, objectName } = attributes;
+    const file = await files.storage.uploadRequest({ bucketName, objectName });
 
-    const res = await Storage.uploadRequest({ bucketName, objectName });
-
-    return res;
+    return file;
   };
 
   return ret;
 }
 
 function attach(attachment = {}) {
-  const External = {};
+  const Module = {
+    attachment,
 
-  const Storage = storage.attach(attachment);
+    files: { storage: filesStorage.attach(attachment) },
+  };
 
   const functions = [downloadRequest, listObject, uploadRequest];
   const ret = {};
 
   functions.forEach(fn => {
-    ret[fn.name] = fn({ External, Storage });
+    ret[fn.name] = fn(Module);
   });
 
   return ret;

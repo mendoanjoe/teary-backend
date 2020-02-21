@@ -1,7 +1,7 @@
 const yaml = require('yamljs');
 
 const jwt = require('./jwt');
-const roleModule = require('./../src/role');
+const rolesModule = require('./../src/roles');
 
 const routesPath = yaml.load('routes.yaml');
 
@@ -49,7 +49,7 @@ function isPublicUrl(ctx) {
 
 function attach(attachment = {}) {
   const { redis } = attachment;
-  const roleCore = roleModule.core.attach(attachment);
+  const roleCore = rolesModule.core.attach(attachment);
 
   const ret = async (ctx, next) => {
     const { url } = ctx.request;
