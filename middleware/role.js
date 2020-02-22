@@ -1,7 +1,7 @@
 const yaml = require('yamljs');
 
 const jwt = require('./jwt');
-const rolesModule = require('./../src/roles');
+const rolesModule = require('./../src/modules/roles');
 
 const routesPath = yaml.load('routes.yaml');
 
@@ -83,7 +83,7 @@ function attach(attachment = {}) {
             const role = await roleCore.getRoleById(roleId);
 
             if (role) {
-              rules = JSON.stringify(role.dataValues.rules);
+              rules = JSON.stringify(role.rules);
               redis.set(key, rules);
             } else {
               rules = await redis.getAsync('role/default');

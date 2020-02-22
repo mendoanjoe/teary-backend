@@ -2,7 +2,7 @@ const axios = require('axios');
 const httpStatus = require('http-status-codes');
 const { google } = require('googleapis');
 
-const jwt = require('./../../middleware/jwt');
+const jwt = require('./../../../middleware/jwt');
 
 const authCore = require('./auth.core');
 const authValidation = require('./auth.validation');

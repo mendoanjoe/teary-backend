@@ -1,4 +1,4 @@
-const pagination = require('./../../helper/pagination');
+const pagination = require('./../../../helper/pagination');
 
 function createRole(Module = {}) {
   const { roles } = Module;
