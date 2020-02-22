@@ -9,9 +9,6 @@ const koaLogger = require('koa-logger');
 const db = require('./../db');
 const routes = require('./routes');
 
-// const mailgun = require('./../lib/mailgun');
-// const duitku = require('./../lib/duitku');
-// const socket = require('./../lib/socket.io');
 const logger = require('./../lib/logger');
 const minio = require('./../lib/minio');
 const redis = require('./../lib/redis');
@@ -38,6 +35,10 @@ function setup(env) {
   app.use(helmet());
 
   const trustedOrigins = [`http://localhost:${env.PORT}`];
+  if (env.FRONTEND_CROSS_ORIGIN_URL) {
+    trustedOrigins.push(env.FRONTEND_CROSS_ORIGIN_URL);
+  }
+
   app.use(cors({ origin: verifyOrigin(trustedOrigins) }));
 
   app.use(bodyParser({ enableTypes: ['json', 'form'] }));
@@ -55,10 +56,6 @@ function setup(env) {
 
     db: db.init(env),
 
-    // mailgun: mailgun.init(env),
-    // duitku: duitku.init(env),
-    // socket: socket.connect(env.REDIS_HOST, env.REDIS_PORT),
-    // redisQueue: redis.queue.connect(env.REDIS_HOST, env.REDIS_PORT),
     logger: logger(env),
     minio: minio.init(env),
     redis: redis.connect(env),
@@ -72,10 +69,7 @@ function setup(env) {
 
   app.use(router.routes(), router.allowedMethods());
 
-  app.onListening = async () => {
-    // attachment.redisQueue.initSubscriber();
-    // attachment.redisQueue.initReceiver.attach(attachment);
-  };
+  app.onListening = async () => {};
 
   return { app, attachment };
 }

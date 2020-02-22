@@ -1,22 +1,16 @@
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define(
-    'users',
+  const Roles = sequelize.define(
+    'roles',
     {
       id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      role_id: DataTypes.UUID,
 
-      nim: DataTypes.STRING,
-      email: DataTypes.STRING,
+      deletable: DataTypes.BOOLEAN,
       name: DataTypes.STRING,
-      password: DataTypes.STRING,
-      bucket_name: DataTypes.STRING,
-      google_access_token: DataTypes.STRING,
-      google_refresh_token: DataTypes.STRING,
-      google_token_expiry_date: DataTypes.DATE,
+      rules: DataTypes.JSONB,
 
       created_at: DataTypes.DATE,
       updated_at: DataTypes.DATE,
@@ -30,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
 
       indexes: [
         {
-          fields: ['email'],
+          fields: ['name'],
           unique: true,
         },
       ],
@@ -38,9 +32,9 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // eslint-disable-next-line no-unused-vars
-  User.associate = models => {
+  Roles.associate = models => {
     // associations can be defined here
   };
 
-  return User;
+  return Roles;
 };

@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-  const Role = sequelize.define(
-    'roles',
+  const Assignments = sequelize.define(
+    'assignments',
     {
       id: {
         type: DataTypes.UUID,
@@ -8,9 +8,11 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
 
-      deletable: DataTypes.BOOLEAN,
-      name: DataTypes.STRING,
-      rules: DataTypes.JSONB,
+      title: DataTypes.STRING,
+      description: DataTypes.STRING,
+      is_published: DataTypes.BOOLEAN,
+      start_date: DataTypes.DATE,
+      end_date: DataTypes.DATE,
 
       created_at: DataTypes.DATE,
       updated_at: DataTypes.DATE,
@@ -21,20 +23,13 @@ module.exports = (sequelize, DataTypes) => {
       deletedAt: 'deleted_at',
       paranoid: true,
       updatedAt: 'updated_at',
-
-      indexes: [
-        {
-          fields: ['name'],
-          unique: true,
-        },
-      ],
     }
   );
 
   // eslint-disable-next-line no-unused-vars
-  Role.associate = models => {
+  Assignments.associate = models => {
     // associations can be defined here
   };
 
-  return Role;
+  return Assignments;
 };

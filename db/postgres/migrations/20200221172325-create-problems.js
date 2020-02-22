@@ -1,48 +1,40 @@
 module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface
-      .createTable('users', {
+      .createTable('problems', {
         id: {
           type: Sequelize.UUID,
           primaryKey: true,
           defaultValue: Sequelize.UUIDV4,
         },
-        role_id: {
+
+        assignment_id: {
           allowNull: false,
           type: Sequelize.UUID,
         },
-
-        nim: {
+        title: {
           allowNull: false,
           type: Sequelize.STRING,
         },
-        email: {
+        type: {
           allowNull: false,
           type: Sequelize.STRING,
         },
-        name: {
-          allowNull: true,
-          type: Sequelize.STRING,
-        },
-        password: {
-          allowNull: true,
-          type: Sequelize.STRING,
-        },
-        bucket_name: {
+        body: {
           allowNull: false,
-          type: Sequelize.STRING,
+          type: Sequelize.TEXT,
         },
-        google_access_token: {
-          allowNull: true,
-          type: Sequelize.STRING,
+        scores: {
+          allowNull: false,
+          type: Sequelize.INTEGER,
         },
-        google_refresh_token: {
+        time_limit: {
           allowNull: true,
-          type: Sequelize.STRING,
+          type: Sequelize.INTEGER,
         },
-        google_token_expiry_date: {
+        memory_limit: {
           allowNull: true,
-          type: Sequelize.DATE,
+          type: Sequelize.INTEGER,
         },
 
         created_at: {
@@ -59,11 +51,11 @@ module.exports = {
         },
       })
       .then(() => {
-        queryInterface.addIndex('users', ['email', 'role_id']);
+        queryInterface.addIndex('problems', ['assignment_id']);
       }),
 
   // eslint-disable-next-line no-unused-vars
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('users');
+    return queryInterface.dropTable('problems');
   },
 };
