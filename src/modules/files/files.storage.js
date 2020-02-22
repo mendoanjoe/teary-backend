@@ -22,7 +22,7 @@ function downloadRequest(Module = {}) {
   return ret;
 }
 
-function listObject(Module = {}) {
+function objectList(Module = {}) {
   const { attachment, files } = Module;
   const { minio } = attachment;
 
@@ -69,7 +69,7 @@ function attach(attachment = {}) {
     files: { errors: filesErrors },
   };
 
-  const functions = [downloadRequest, listObject, uploadRequest];
+  const functions = [downloadRequest, objectList, uploadRequest];
   const ret = {};
 
   functions.forEach(fn => {

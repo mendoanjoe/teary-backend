@@ -1,6 +1,6 @@
 const filesStorage = require('./files.storage');
 
-function downloadRequest(Module = {}) {
+function getDownloadRequest(Module = {}) {
   const { files } = Module;
 
   const ret = async (attributes = {}) => {
@@ -13,11 +13,11 @@ function downloadRequest(Module = {}) {
   return ret;
 }
 
-function listObject(Module = {}) {
+function getObjectList(Module = {}) {
   const { files } = Module;
 
   const ret = async bucketName => {
-    const file = await files.storage.listObject(bucketName);
+    const file = await files.storage.objectList(bucketName);
 
     return file;
   };
@@ -25,7 +25,7 @@ function listObject(Module = {}) {
   return ret;
 }
 
-function uploadRequest(Module = {}) {
+function getUploadRequest(Module = {}) {
   const { files } = Module;
 
   const ret = async (attributes = {}) => {
@@ -45,7 +45,7 @@ function attach(attachment = {}) {
     files: { storage: filesStorage.attach(attachment) },
   };
 
-  const functions = [downloadRequest, listObject, uploadRequest];
+  const functions = [getDownloadRequest, getObjectList, getUploadRequest];
   const ret = {};
 
   functions.forEach(fn => {

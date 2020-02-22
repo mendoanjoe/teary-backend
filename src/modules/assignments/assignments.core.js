@@ -1,5 +1,3 @@
-const bcrypt = require('bcryptjs');
-
 const assignmentsStorage = require('./assignments.storage');
 
 function createAssignment(Module = {}) {
@@ -42,9 +40,9 @@ function getAssignmentList(Module = {}) {
   const { assignments } = Module;
 
   const ret = async (ctx, attributes = {}) => {
-    const userList = await assignments.storage.paginate(ctx, attributes);
+    const assignmentList = await assignments.storage.paginate(ctx, attributes);
 
-    return userList;
+    return assignmentList;
   };
 
   return ret;

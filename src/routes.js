@@ -4,6 +4,7 @@ const router = require('koa-router')();
 const auth = require('./modules/auth');
 const assignments = require('./modules/assignments');
 const files = require('./modules/files');
+const problems = require('./modules/problems');
 const roles = require('./modules/roles');
 const users = require('./modules/users');
 
@@ -11,6 +12,7 @@ function attach(attachment = {}) {
   const authRouter = auth.routes.attach(attachment);
   const assignmentsRouter = assignments.routes.attach(attachment);
   const filesRouter = files.routes.attach(attachment);
+  const problemsRouter = problems.routes.attach(attachment);
   const rolesRouter = roles.routes.attach(attachment);
   const usersRouter = users.routes.attach(attachment);
 
@@ -19,6 +21,7 @@ function attach(attachment = {}) {
   router.use(authRouter.routes(), authRouter.allowedMethods());
   router.use(assignmentsRouter.routes(), assignmentsRouter.allowedMethods());
   router.use(filesRouter.routes(), filesRouter.allowedMethods());
+  router.use(problemsRouter.routes(), problemsRouter.allowedMethods());
   router.use(rolesRouter.routes(), rolesRouter.allowedMethods());
   router.use(usersRouter.routes(), usersRouter.allowedMethods());
 

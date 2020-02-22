@@ -9,7 +9,9 @@ exports.createAssignmentSchema = Joi.object({
 });
 
 exports.getAssignmentSchema = Joi.object({
-  assignmentId: Joi.string().uuid().required(),
+  assignmentId: Joi.string()
+    .uuid()
+    .required(),
 });
 
 exports.paginationQuery = Joi.object({

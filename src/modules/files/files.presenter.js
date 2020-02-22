@@ -4,11 +4,11 @@ const filesCore = require('./files.core');
 const filesErrors = require('./files.errors');
 const filesValidation = require('./files.validation');
 
-function DownloadRequest(Module = {}) {
+function GetDownloadRequest(Module = {}) {
   const { files } = Module;
 
   const ret = async ctx => {
-    const validate = files.validation.downloadRequestSchema.validate(ctx.request.body);
+    const validate = files.validation.getDownloadRequestSchema.validate(ctx.request.body);
 
     if (validate.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -25,7 +25,7 @@ function DownloadRequest(Module = {}) {
     }
 
     const { bucketName, objectName } = ctx.request.body;
-    const file = await files.core.downloadRequest({ bucketName, objectName });
+    const file = await files.core.getDownloadRequest({ bucketName, objectName });
 
     if (file === files.errors.OBJECT_NOT_FOUND) {
       ctx.status = httpStatus.NOT_FOUND;
@@ -52,11 +52,11 @@ function DownloadRequest(Module = {}) {
   return ret;
 }
 
-function ListObject(Module = {}) {
+function GetObjectList(Module = {}) {
   const { files } = Module;
 
   const ret = async ctx => {
-    const validate = files.validation.listObjectSchema.validate(ctx.params);
+    const validate = files.validation.getObjectListSchema.validate(ctx.params);
 
     if (validate.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -73,7 +73,7 @@ function ListObject(Module = {}) {
     }
 
     const { bucketName } = ctx.params;
-    const objects = await files.core.listObject(bucketName);
+    const objects = await files.core.getObjectList(bucketName);
 
     if (objects === files.errors.BUCKET_NOT_FOUND) {
       ctx.status = httpStatus.NOT_FOUND;
@@ -98,11 +98,11 @@ function ListObject(Module = {}) {
   return ret;
 }
 
-function UploadRequest(Module = {}) {
+function GetUploadRequest(Module = {}) {
   const { files } = Module;
 
   const ret = async ctx => {
-    const validate = files.validation.uploadRequestSchema.validate(ctx.request.body);
+    const validate = files.validation.getUploadRequestSchema.validate(ctx.request.body);
 
     if (validate.error) {
       ctx.status = httpStatus.BAD_REQUEST;
@@ -128,7 +128,7 @@ function UploadRequest(Module = {}) {
 
     objectName = `${newObjectName}${objectExtension}`;
 
-    const fileUploadRequest = await files.core.uploadRequest({ bucketName, objectName });
+    const fileUploadRequest = await files.core.getUploadRequest({ bucketName, objectName });
 
     if (fileUploadRequest === files.errors.BUCKET_NOT_FOUND) {
       ctx.status = httpStatus.NOT_FOUND;
@@ -178,7 +178,7 @@ function attach(attachment = {}) {
     },
   };
 
-  const functions = [DownloadRequest, ListObject, UploadRequest];
+  const functions = [GetDownloadRequest, GetObjectList, GetUploadRequest];
   const ret = {};
 
   functions.forEach(fn => {

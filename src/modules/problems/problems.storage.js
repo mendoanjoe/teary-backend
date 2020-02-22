@@ -1,64 +1,64 @@
 const pagination = require('../../../helper/pagination');
 
 function create(Module = {}) {
-  const { assignments } = Module;
+  const { problems } = Module;
 
   const ret = async (attributes = {}) => {
-    const assignment = await assignments.model.create(attributes);
+    const problem = await problems.model.create(attributes);
 
-    return assignment;
+    return problem;
   };
 
   return ret;
 }
 
 function deleteById(Module = {}) {
-  const { assignments } = Module;
+  const { problems } = Module;
 
   const ret = async id => {
-    const assignment = await assignments.model.destroy({ where: { id } });
+    const problem = await problems.model.destroy({ where: { id } });
 
-    return assignment;
+    return problem;
   };
 
   return ret;
 }
 
 function getById(Module = {}) {
-  const { assignments } = Module;
+  const { problems } = Module;
 
   const ret = async id => {
-    const assignment = await assignments.model.findOne({ where: { id } });
+    const problem = await problems.model.findOne({ where: { id } });
 
-    return assignment;
+    return problem;
   };
 
   return ret;
 }
 
 function paginate(Module = {}) {
-  const { assignments } = Module;
+  const { problems } = Module;
 
   const ret = async (ctx, attributes = {}) => {
-    const assignmentList = await assignments.helper.paginate(ctx, attributes);
+    const problemList = await problems.helper.paginate(ctx, attributes);
 
-    return assignmentList;
+    return problemList;
   };
 
   return ret;
 }
 
 function updateById(Module = {}) {
-  const { assignments } = Module;
+  const { problems } = Module;
 
   const ret = async (id, attributes = {}) => {
-    const assignment = await assignments.model.update(attributes, {
+    const problem = await problems.model.update(attributes, {
       where: { id },
       returning: true,
       plain: true,
     });
 
-    return assignment;
+    return problem;
   };
 
   return ret;
@@ -68,9 +68,9 @@ function attach(attachment = {}) {
   const Module = {
     attachment,
 
-    assignments: {
+    problems: {
       helper: { paginate: pagination.attach(attachment) },
-      model: attachment.db.postgres.models.assignments,
+      model: attachment.db.postgres.models.problems,
     },
   };
 

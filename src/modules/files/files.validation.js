@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi');
 
-exports.downloadRequestSchema = Joi.object({
+exports.getDownloadRequestSchema = Joi.object({
   bucketName: Joi.string()
     .min(1)
     .required(),
@@ -9,10 +9,10 @@ exports.downloadRequestSchema = Joi.object({
     .required(),
 });
 
-exports.listObjectSchema = Joi.object({
+exports.getObjectListSchema = Joi.object({
   bucketName: Joi.string()
     .min(1)
     .required(),
 });
 
-exports.uploadRequestSchema = this.downloadRequestSchema;
+exports.getUploadRequestSchema = this.getDownloadRequestSchema;

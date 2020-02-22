@@ -7,9 +7,9 @@ function attach(attachment = {}) {
 
   router.prefix('/files');
 
-  router.get('/:bucketName', presenter.ListObject);
-  router.post('/download/request', presenter.DownloadRequest);
-  router.post('/upload/request', presenter.UploadRequest);
+  router.get('/:bucketName', presenter.GetObjectList);
+  router.post('/download/request', presenter.GetDownloadRequest);
+  router.post('/upload/request', presenter.GetUploadRequest);
 
   return router;
 }
