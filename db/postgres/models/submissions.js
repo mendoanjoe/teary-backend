@@ -10,6 +10,8 @@ module.exports = (sequelize, DataTypes) => {
 
       problem_id: DataTypes.UUID,
       user_id: DataTypes.UUID,
+      bucket_name: DataTypes.STRING,
+      object_name: DataTypes.STRING,
       scores: DataTypes.INTEGER,
       status: DataTypes.STRING,
       logs: DataTypes.TEXT,

@@ -6,6 +6,7 @@ const assignments = require('./modules/assignments');
 const files = require('./modules/files');
 const problems = require('./modules/problems');
 const roles = require('./modules/roles');
+const submissions = require('./modules/submissions');
 const testcases = require('./modules/testcases');
 const users = require('./modules/users');
 
@@ -15,6 +16,7 @@ function attach(attachment = {}) {
   const filesRouter = files.routes.attach(attachment);
   const problemsRouter = problems.routes.attach(attachment);
   const rolesRouter = roles.routes.attach(attachment);
+  const submissionsRouter = submissions.routes.attach(attachment);
   const testcasesRouter = testcases.routes.attach(attachment);
   const usersRouter = users.routes.attach(attachment);
 
@@ -25,6 +27,7 @@ function attach(attachment = {}) {
   router.use(filesRouter.routes(), filesRouter.allowedMethods());
   router.use(problemsRouter.routes(), problemsRouter.allowedMethods());
   router.use(rolesRouter.routes(), rolesRouter.allowedMethods());
+  router.use(submissionsRouter.routes(), submissionsRouter.allowedMethods());
   router.use(testcasesRouter.routes(), testcasesRouter.allowedMethods());
   router.use(usersRouter.routes(), usersRouter.allowedMethods());
 

@@ -16,8 +16,16 @@ module.exports = {
           allowNull: false,
           type: Sequelize.UUID,
         },
-        scores: {
+        bucket_name: {
           allowNull: false,
+          type: Sequelize.STRING,
+        },
+        object_name: {
+          allowNull: false,
+          type: Sequelize.STRING,
+        },
+        scores: {
+          allowNull: true,
           type: Sequelize.INTEGER,
         },
         status: {

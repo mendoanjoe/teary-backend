@@ -7,7 +7,9 @@ exports.createProblemSchema = Joi.object({
   title: Joi.string().required(),
   type: Joi.string().required(),
   body: Joi.string().required(),
-  scores: Joi.number().required(),
+  scores: Joi.number()
+    .min(0)
+    .required(),
   time_limit: Joi.number(),
   memory_limit: Joi.number(),
 });
@@ -28,7 +30,7 @@ exports.updateProblemSchema = Joi.object({
   title: Joi.string(),
   type: Joi.string(),
   body: Joi.string(),
-  scores: Joi.number(),
+  scores: Joi.number().min(0),
   time_limit: Joi.number(),
   memory_limit: Joi.number(),
 });
