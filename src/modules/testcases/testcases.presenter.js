@@ -1,10 +1,11 @@
 const httpStatus = require('http-status-codes');
 
+const problemsCore = require('./../problems/problems.core');
 const testcasesCore = require('./testcases.core');
 const testcasesValidation = require('./testcases.validation');
 
 function CreateTestcase(Module = {}) {
-  const { testcases } = Module;
+  const { problems, testcases } = Module;
 
   const ret = async ctx => {
     const validateBody = testcases.validation.createTestcaseSchema.validate(ctx.request.body);
@@ -19,6 +20,18 @@ function CreateTestcase(Module = {}) {
         data: {
           error: validateBody.error,
         },
+      };
+      return;
+    }
+
+    const problem = await problems.core.getProblemById(ctx.request.body.problem_id);
+
+    if (!problem) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'problem not found',
+        ok: false,
       };
       return;
     }
@@ -68,7 +81,19 @@ function DeleteTestcaseById(Module = {}) {
       return;
     }
 
-    const testcase = await testcases.core.deleteTestcaseById(ctx.params.testcaseId);
+    let testcase = await testcases.core.getTestcaseById(ctx.params.testcaseId);
+
+    if (!testcase) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'testcase not found',
+        ok: false,
+      };
+      return;
+    }
+
+    testcase = await testcases.core.deleteTestcaseById(ctx.params.testcaseId);
 
     if (testcase === 0) {
       ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
@@ -152,6 +177,16 @@ function GetTestcaseById(Module = {}) {
 
     const testcase = await testcases.core.getTestcaseById(ctx.params.testcaseId);
 
+    if (!testcase) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'testcase not found',
+        ok: false,
+      };
+      return;
+    }
+
     ctx.status = httpStatus.OK;
     ctx.body = {
       code: httpStatus.OK,
@@ -201,7 +236,19 @@ function UpdateTestcaseById(Module = {}) {
       return;
     }
 
-    const testcase = await testcases.core.updateTestcaseById({
+    let testcase = await testcases.core.getTestcaseById(ctx.params.testcaseId);
+
+    if (!testcase) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'testcase not found',
+        ok: false,
+      };
+      return;
+    }
+
+    testcase = await testcases.core.updateTestcaseById({
       id: ctx.params.testcaseId,
 
       ...ctx.request.body,
@@ -234,6 +281,9 @@ function attach(attachment = {}) {
   const Module = {
     attachment,
 
+    problems: {
+      core: problemsCore.attach(attachment),
+    },
     testcases: {
       core: testcasesCore.attach(attachment),
       validation: testcasesValidation,

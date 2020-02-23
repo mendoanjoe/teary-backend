@@ -1,10 +1,11 @@
 const httpStatus = require('http-status-codes');
 
+const assignmentsCore = require('./../assignments/assignments.core');
 const problemsCore = require('./problems.core');
 const problemsValidation = require('./problems.validation');
 
 function CreateProblem(Module = {}) {
-  const { problems } = Module;
+  const { assignments, problems } = Module;
 
   const ret = async ctx => {
     const validateBody = problems.validation.createProblemSchema.validate(ctx.request.body);
@@ -19,6 +20,18 @@ function CreateProblem(Module = {}) {
         data: {
           error: validateBody.error,
         },
+      };
+      return;
+    }
+
+    const assignment = await assignments.core.getAssignmentById(ctx.request.body.assignment_id);
+
+    if (!assignment) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'assignment not found',
+        ok: false,
       };
       return;
     }
@@ -68,7 +81,19 @@ function DeleteProblemById(Module = {}) {
       return;
     }
 
-    const problem = await problems.core.deleteProblemById(ctx.params.problemId);
+    let problem = await problems.core.getProblemById(ctx.params.problemId);
+
+    if (!problem) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'problem not found',
+        ok: false,
+      };
+      return;
+    }
+
+    problem = await problems.core.deleteProblemById(ctx.params.problemId);
 
     if (problem === 0) {
       ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
@@ -152,6 +177,16 @@ function GetProblemById(Module = {}) {
 
     const problem = await problems.core.getProblemById(ctx.params.problemId);
 
+    if (!problem) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'problem not found',
+        ok: false,
+      };
+      return;
+    }
+
     ctx.status = httpStatus.OK;
     ctx.body = {
       code: httpStatus.OK,
@@ -201,7 +236,19 @@ function UpdateProblemById(Module = {}) {
       return;
     }
 
-    const problem = await problems.core.updateProblemById({
+    let problem = await problems.core.getProblemById(ctx.params.problemId);
+
+    if (!problem) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'problem not found',
+        ok: false,
+      };
+      return;
+    }
+
+    problem = await problems.core.updateProblemById({
       id: ctx.params.problemId,
 
       ...ctx.request.body,
@@ -234,6 +281,9 @@ function attach(attachment = {}) {
   const Module = {
     attachment,
 
+    assignments: {
+      core: assignmentsCore.attach(attachment),
+    },
     problems: {
       core: problemsCore.attach(attachment),
       validation: problemsValidation,

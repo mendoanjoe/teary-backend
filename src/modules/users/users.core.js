@@ -77,6 +77,18 @@ function findUserById(Module = {}) {
   return ret;
 }
 
+function getUserById(Module = {}) {
+  const { users } = Module;
+
+  const ret = async id => {
+    const user = await users.storage.getById(id);
+
+    return user;
+  };
+
+  return ret;
+}
+
 function getListUser(Module = {}) {
   const { users } = Module;
 
@@ -165,6 +177,7 @@ function attach(attachment = {}) {
     findUserByEmail,
     findUserById,
     getListUser,
+    getUserById,
     isEmailRegistered,
     updateUser,
     updateUserByEmail,

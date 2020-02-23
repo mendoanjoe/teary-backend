@@ -68,7 +68,19 @@ function DeleteAssignmentById(Module = {}) {
       return;
     }
 
-    const assignment = await assignments.core.deleteAssignmentById(ctx.params.assignmentId);
+    let assignment = await assignments.core.getAssignmentById(ctx.params.assignmentId);
+
+    if (!assignment) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'assignment not found',
+        ok: false,
+      };
+      return;
+    }
+
+    assignment = await assignments.core.deleteAssignmentById(ctx.params.assignmentId);
 
     if (assignment === 0) {
       ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
@@ -152,6 +164,16 @@ function GetAssignmentById(Module = {}) {
 
     const assignment = await assignments.core.getAssignmentById(ctx.params.assignmentId);
 
+    if (!assignment) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'assignment not found',
+        ok: false,
+      };
+      return;
+    }
+
     ctx.status = httpStatus.OK;
     ctx.body = {
       code: httpStatus.OK,
@@ -201,7 +223,19 @@ function UpdateAssignmentById(Module = {}) {
       return;
     }
 
-    const assignment = await assignments.core.updateAssignmentById({
+    let assignment = await assignments.core.getAssignmentById(ctx.params.assignmentId);
+
+    if (!assignment) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'assignment not found',
+        ok: false,
+      };
+      return;
+    }
+
+    assignment = await assignments.core.updateAssignmentById({
       id: ctx.params.assignmentId,
 
       ...ctx.request.body,

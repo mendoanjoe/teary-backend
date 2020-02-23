@@ -48,6 +48,18 @@ function findById(Module = {}) {
   return ret;
 }
 
+function getById(Module = {}) {
+  const { users } = Module;
+
+  const ret = async id => {
+    const user = await users.model.findOne({ where: { id } });
+
+    return user;
+  };
+
+  return ret;
+}
+
 function paginate(Module = {}) {
   const { users } = Module;
 
@@ -107,6 +119,7 @@ function attach(attachment = {}) {
     deleteUserById,
     findByEmail,
     findById,
+    getById,
     paginate,
     updateUserById,
     updateByEmail,

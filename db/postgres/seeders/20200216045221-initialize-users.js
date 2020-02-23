@@ -9,7 +9,7 @@ module.exports = {
         {
           id: uuid(),
 
-          role_id: 'e5112e4d-d7e7-4f6d-aa5d-8b62900d02f3',
+          role_id: 'c1cf7552-4722-4d86-b0d6-67c27516bf87',
           nim: '1301160479',
           email: 'nurcahyo@student.telkomuniversity.ac.id',
           name: 'Wisnu Adi Nurcahyo',

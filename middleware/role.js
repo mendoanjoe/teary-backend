@@ -122,7 +122,7 @@ function attach(attachment = {}) {
               console.error(err);
             }
 
-            if (!isDisabled) {
+            if (isDisabled) {
               break;
             }
           }

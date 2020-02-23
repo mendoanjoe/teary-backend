@@ -1,10 +1,12 @@
 const httpStatus = require('http-status-codes');
 
+const problemsCore = require('./../problems/problems.core');
 const submissionsCore = require('./submissions.core');
 const submissionsValidation = require('./submissions.validation');
+const usersCore = require('./../users/users.core');
 
 function CreateSubmission(Module = {}) {
-  const { submissions } = Module;
+  const { problems, submissions, users } = Module;
 
   const ret = async ctx => {
     const validateBody = submissions.validation.createSubmissionSchema.validate(ctx.request.body);
@@ -19,6 +21,30 @@ function CreateSubmission(Module = {}) {
         data: {
           error: validateBody.error,
         },
+      };
+      return;
+    }
+
+    const user = await users.core.getUserById(ctx.request.body.user_id);
+
+    if (!user) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'user not found',
+        ok: false,
+      };
+      return;
+    }
+
+    const problem = await problems.core.getProblemById(ctx.request.body.problem_id);
+
+    if (!problem) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'problem not found',
+        ok: false,
       };
       return;
     }
@@ -68,7 +94,19 @@ function DeleteSubmissionById(Module = {}) {
       return;
     }
 
-    const submission = await submissions.core.deleteSubmissionById(ctx.params.submissionId);
+    let submission = await submissions.core.getSubmissionById(ctx.params.submissionId);
+
+    if (!submission) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'submission not found',
+        ok: false,
+      };
+      return;
+    }
+
+    submission = await submissions.core.deleteSubmissionById(ctx.params.submissionId);
 
     if (submission === 0) {
       ctx.status = httpStatus.INTERNAL_SERVER_ERROR;
@@ -152,6 +190,16 @@ function GetSubmissionById(Module = {}) {
 
     const submission = await submissions.core.getSubmissionById(ctx.params.submissionId);
 
+    if (!submission) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'submission not found',
+        ok: false,
+      };
+      return;
+    }
+
     ctx.status = httpStatus.OK;
     ctx.body = {
       code: httpStatus.OK,
@@ -201,7 +249,19 @@ function UpdateSubmissionById(Module = {}) {
       return;
     }
 
-    const submission = await submissions.core.updateSubmissionById({
+    let submission = await submissions.core.getSubmissionById(ctx.params.submissionId);
+
+    if (!submission) {
+      ctx.status = httpStatus.NOT_FOUND;
+      ctx.body = {
+        code: httpStatus.NOT_FOUND,
+        message: 'submission not found',
+        ok: false,
+      };
+      return;
+    }
+
+    submission = await submissions.core.updateSubmissionById({
       id: ctx.params.submissionId,
 
       ...ctx.request.body,
@@ -234,9 +294,15 @@ function attach(attachment = {}) {
   const Module = {
     attachment,
 
+    problems: {
+      core: problemsCore.attach(attachment),
+    },
     submissions: {
       core: submissionsCore.attach(attachment),
       validation: submissionsValidation,
+    },
+    users: {
+      core: usersCore.attach(attachment),
     },
   };
 
