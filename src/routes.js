@@ -6,6 +6,7 @@ const assignments = require('./modules/assignments');
 const files = require('./modules/files');
 const problems = require('./modules/problems');
 const roles = require('./modules/roles');
+const testcases = require('./modules/testcases');
 const users = require('./modules/users');
 
 function attach(attachment = {}) {
@@ -14,6 +15,7 @@ function attach(attachment = {}) {
   const filesRouter = files.routes.attach(attachment);
   const problemsRouter = problems.routes.attach(attachment);
   const rolesRouter = roles.routes.attach(attachment);
+  const testcasesRouter = testcases.routes.attach(attachment);
   const usersRouter = users.routes.attach(attachment);
 
   router.prefix('/v1');
@@ -23,6 +25,7 @@ function attach(attachment = {}) {
   router.use(filesRouter.routes(), filesRouter.allowedMethods());
   router.use(problemsRouter.routes(), problemsRouter.allowedMethods());
   router.use(rolesRouter.routes(), rolesRouter.allowedMethods());
+  router.use(testcasesRouter.routes(), testcasesRouter.allowedMethods());
   router.use(usersRouter.routes(), usersRouter.allowedMethods());
 
   router.get('/ping', async ctx => {
