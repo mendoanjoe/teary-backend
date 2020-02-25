@@ -20,6 +20,7 @@ function init(env) {
   const db = config[env.NODE_ENV];
   const logger = winston(env);
   const sequelize = new Sequelize(db.database, db.username, db.password, db);
+  const dbs = {};
 
   sequelize
     .authenticate()
@@ -38,11 +39,22 @@ function init(env) {
 
   const pwd = path.resolve('./db/postgres');
   const modelsPath = `${pwd}/models`;
-
+  
   fs.readdirSync(modelsPath)
     .filter(file => isValidFile(file))
-    .forEach(file => sequelize.import(path.join(modelsPath, `/${file}`)));
+    .forEach(file => {
+      const model = sequelize.import(path.join(modelsPath, `/${file}`));
+      dbs[model.name] = model;
+    });
 
+  // associate db
+  // https://sequelize.org/master/manual/assocs.html
+  Object.keys(dbs).forEach(modelName => {
+    if (dbs[modelName].associate) {
+      dbs[modelName].associate(dbs);
+    }
+  });
+  
   return sequelize;
 }
 
